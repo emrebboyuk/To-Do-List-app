@@ -1,7 +1,8 @@
 from flask_apispec import use_kwargs, marshal_with, MethodResource
 from werkzeug.security import generate_password_hash
+from flask_jwt_extended import jwt_required
 
-from app.db import db
+from app.extensions.db import db
 from app.common.schemas import MessageSchema
 from app.modules.user.models import UserModel
 from app.modules.user.schemas import UserViewResponseSchema, UserViewPutRequestSchema
@@ -46,6 +47,7 @@ class UsersView(MethodResource):
             return {"message": f"An error occurred: {str(e)}"}, 500
         return user, 201
 
+    @jwt_required()
     @marshal_with(MessageSchema, code=200)
     @marshal_with(MessageSchema, code=500)
     def delete(self, user_id):

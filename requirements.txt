@@ -8,3 +8,5 @@ flask-migrate==4.0.7
 black==24.4.2
 flask-apispec==0.11.4
 werkzeug==3.0.3
+Flask-JWT-Extended==4.6.0
+PyJWT==2.8.0

@@ -1,6 +1,7 @@
 from flask_apispec import MethodResource, use_kwargs, marshal_with
+from flask_jwt_extended import jwt_required
 
-from app.db import db
+from app.extensions.db import db
 from app.common.schemas import MessageSchema
 from app.modules.task.models import CategoryModel, TaskModel
 from app.modules.task.schemas import (
@@ -30,6 +31,7 @@ class CategoryView(MethodResource):
             categories = CategoryModel.query.all()
             return categories, 200
 
+    @jwt_required()
     @use_kwargs(CategorySchema, location="json")
     @marshal_with(MessageSchema, code=201)
     @marshal_with(MessageSchema, code=500)
@@ -45,6 +47,7 @@ class CategoryView(MethodResource):
 
         return {"message": f"Category created successfully, task_id: {new_category.id}"}, 201
 
+    @jwt_required()
     @marshal_with(MessageSchema, code=200)
     @marshal_with(MessageSchema, code=500)
     def delete(self, category_id):
