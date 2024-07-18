@@ -1,0 +1,10 @@
+Flask==3.0.3
+Flask-SQLAlchemy==3.1.1
+marshmallow==3.21.3
+psycopg2-binary==2.9.9
+python-dotenv==1.0.1
+SQLAlchemy==2.0.31
+flask-migrate==4.0.7
+black==24.4.2
+flask-apispec==0.11.4
+werkzeug==3.0.3
