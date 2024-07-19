@@ -1,7 +1,14 @@
 from flask_jwt_extended import JWTManager
+from app.modules.user.models import UserModel
 from flask import jsonify
 
 jwt = JWTManager()
+
+
+@jwt.additional_claims_loader
+def add_claims_to_jwt(identity):
+    user = UserModel.query.get(identity)
+    return {"role": user.role}
 
 
 @jwt.expired_token_loader

@@ -1,6 +1,6 @@
 from flask_apispec import use_kwargs, marshal_with, MethodResource
 from werkzeug.security import generate_password_hash
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 
 from app.extensions.db import db
 from app.common.schemas import MessageSchema
@@ -11,31 +11,51 @@ from app.modules.user.schemas import UserViewResponseSchema, UserViewPutRequestS
 class UsersView(MethodResource):
     schema = UserViewResponseSchema()
 
+    @jwt_required()
     @marshal_with(schema, code=200)
     @marshal_with(MessageSchema, code=500)
     @marshal_with(MessageSchema, code=404)
+    @marshal_with(MessageSchema, code=403)
     def get(self, user_id=None):
+        current_user_id = get_jwt_identity()
+        claims = get_jwt()
+        user_role = claims["role", "user"]
+
         if user_id:
             self.schema.many = False
             try:
                 user = UserModel.query.get_or_404(user_id)
                 if not user:
                     return {"message": "User not found"}, 404
+                elif user_role != "admin" or user_id != current_user_id:
+                    return {"message": "Access denied"}, 403
             except Exception as e:
                 return {"message": f"An error occurred: {str(e)}"}, 500
             return user, 200
         else:
             self.schema.many = True
             try:
-                users = UserModel.query.all()
+                if user_role == "admin":
+                    users = UserModel.query.all()
+                else:
+                    users = UserModel.query.filter_by(id=current_user_id).fetchone()
                 return users, 200
             except Exception as e:
                 return {"message": f"An error occurred: {str(e)}"}, 500
 
+    @jwt_required()
     @use_kwargs(UserViewPutRequestSchema, location="json")
     @marshal_with(schema, code=201)
     @marshal_with(MessageSchema, code=500)
+    @marshal_with(MessageSchema, code=403)
     def put(self, *args, user_id, **kwargs):
+        current_user_id = get_jwt_identity()
+        claims = get_jwt()
+        user_role = claims["role", "user"]
+
+        if user_role != "admin" and user_id != current_user_id:
+            return {"message": "Access denied"}, 403
+
         user = UserModel.query.get_or_404(user_id)
         try:
             for key, value in kwargs.items():
@@ -50,9 +70,21 @@ class UsersView(MethodResource):
     @jwt_required()
     @marshal_with(MessageSchema, code=200)
     @marshal_with(MessageSchema, code=500)
+    @marshal_with(MessageSchema, code=403)
     def delete(self, user_id):
+        current_user_id = get_jwt_identity()
+        claims = get_jwt()
+        user_role = claims["role", "user"]
+
+        if user_role != "admin" and user_id != current_user_id:
+            return {"message": "Access denied"}, 403
+
         user = UserModel.query.get_or_404(user_id, description="User not found")
-        db.session.delete(user)
-        db.session.commit()
+
+        try:
+            db.session.delete(user)
+            db.session.commit()
+        except Exception as e:
+            return {"message": f"An error occurred: {str(e)}"}, 500
 
         return {"message": "User deleted successfully"}, 200

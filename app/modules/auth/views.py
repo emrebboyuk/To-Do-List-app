@@ -6,7 +6,11 @@ from flask_jwt_extended import create_access_token
 from app.extensions.db import db
 from app.common.schemas import MessageSchema
 from app.modules.user.models import UserModel
-from app.modules.auth.schemas import AccessTokenResponseSchema, SignUpRequestSchema, LoginViewRequestSchema
+from app.modules.auth.schemas import (
+    AccessTokenResponseSchema,
+    SignUpRequestSchema,
+    LoginViewRequestSchema,
+)
 
 
 class SignUpView(MethodResource):
@@ -44,7 +48,7 @@ class LoginView(MethodResource):
         user = UserModel.query.filter_by(username=kwargs["username"]).first()
 
         if not user or not check_password_hash(user.password, kwargs["password"]):
-            return {"message": "Invalid username or password"}, 401
+            return {"message": "Invalid credentials"}, 401
 
         access_token = create_access_token(identity=user.id)
         return {"access_token": access_token}, 200

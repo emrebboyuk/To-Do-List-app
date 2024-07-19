@@ -13,7 +13,6 @@ class TaskViewResponseSchema(Schema):
     description = fields.Str()
     due_date = fields.Str()
     completed = fields.Bool()
-    user_id = fields.Int(required=True)
     category_id = fields.Int(required=True)
     category = fields.Nested(CategorySchema(), dump_only=True)
 
@@ -22,7 +21,6 @@ class TaskViewPostRequestSchema(Schema):
     title = fields.String(required=True)
     description = fields.String()
     due_date = fields.String()
-    user_id = fields.Integer(required=True)
     category_id = fields.Integer(required=True)
 
 

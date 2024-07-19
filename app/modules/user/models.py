@@ -12,4 +12,6 @@ class UserModel(db.Model):
     registered_on = db.Column(db.DateTime, default=datetime.utcnow)
     role = db.Column(db.String(20), default="user")
 
-    tasks = db.relationship("TaskModel", backref="user", lazy=True, cascade="all, delete-orphan")
+    tasks = db.relationship(
+        "TaskModel", backref="user", lazy=True, cascade="all, delete-orphan"
+    )
