@@ -38,7 +38,7 @@ class UsersView(MethodResource):
                 if user_role == "admin":
                     users = UserModel.query.all()
                 else:
-                    users = UserModel.query.filter_by(id=current_user_id).fetchone()
+                    users = UserModel.query.filter_by(id=current_user_id).all()
                 return users, 200
             except Exception as e:
                 return {"message": f"An error occurred: {str(e)}"}, 500
