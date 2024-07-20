@@ -82,7 +82,7 @@ class TasksView(MethodResource):
     def get(self, task_id=None):
         current_user_id = get_jwt_identity()
         claims = get_jwt()
-        user_role = claims["role", "user"]
+        user_role = claims["role"]
 
         if task_id:
             self.schema.many = False
@@ -137,7 +137,7 @@ class TasksView(MethodResource):
     def put(self, *args, task_id, **kwargs):
         current_user_id = get_jwt_identity()
         claims = get_jwt()
-        user_role = claims["role", "user"]
+        user_role = claims["role"]
 
         task = TaskModel.query.get_or_404(task_id)
 
@@ -156,7 +156,7 @@ class TasksView(MethodResource):
     def delete(self, task_id):
         current_user_id = get_jwt_identity()
         claims = get_jwt()
-        user_role = claims["role", "user"]
+        user_role = claims["role"]
 
         task = TaskModel.query.get_or_404(task_id)
 

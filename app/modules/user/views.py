@@ -19,7 +19,7 @@ class UsersView(MethodResource):
     def get(self, user_id=None):
         current_user_id = get_jwt_identity()
         claims = get_jwt()
-        user_role = claims["role", "user"]
+        user_role = claims["role"]
 
         if user_id:
             self.schema.many = False
@@ -51,7 +51,7 @@ class UsersView(MethodResource):
     def put(self, *args, user_id, **kwargs):
         current_user_id = get_jwt_identity()
         claims = get_jwt()
-        user_role = claims["role", "user"]
+        user_role = claims["role"]
 
         if user_role != "admin" and user_id != current_user_id:
             return {"message": "Access denied"}, 403
@@ -74,7 +74,7 @@ class UsersView(MethodResource):
     def delete(self, user_id):
         current_user_id = get_jwt_identity()
         claims = get_jwt()
-        user_role = claims["role", "user"]
+        user_role = claims["role"]
 
         if user_role != "admin" and user_id != current_user_id:
             return {"message": "Access denied"}, 403
@@ -88,3 +88,27 @@ class UsersView(MethodResource):
             return {"message": f"An error occurred: {str(e)}"}, 500
 
         return {"message": "User deleted successfully"}, 200
+
+
+def create_admin_user(username, email, password):
+    """
+    Creates an admin user.
+    :param username: username
+    :param email: email
+    :param password: password
+    :return: UserModel object
+    """
+    hashed_password = generate_password_hash(password, method="pbkdf2:sha256")
+
+    new_user = UserModel(
+        username=username, email=email, password=hashed_password, role="admin"
+    )
+
+    try:
+        db.session.add(new_user)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        raise Exception(f"An error occurred while creating the admin user: {str(e)}")
+
+    return new_user
