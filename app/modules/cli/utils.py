@@ -20,6 +20,7 @@ def create_admin(username, email, password):
         password=generate_password_hash(
             password=user_data["password"], method="pbkdf2:sha256"
         ),
+        role="admin",
     )
     db.session.add(new_admin)
     db.session.commit()
