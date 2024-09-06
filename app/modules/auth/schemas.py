@@ -1,5 +1,4 @@
 from marshmallow import Schema, fields
-from app.common.schemas import MessageSchema
 
 
 class SignUpRequestSchema(Schema):

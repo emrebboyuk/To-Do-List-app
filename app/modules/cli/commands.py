@@ -1,4 +1,3 @@
-import os
 import click
 from flask.cli import with_appcontext
 from app.modules.cli.utils import create_admin
