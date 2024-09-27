@@ -41,8 +41,8 @@ class SignUpView(MethodResource):
             dict: A message indicating the result of the operation.
         """
         if (
-                UserModel.query.filter_by(username=kwargs["username"]).first()
-                or UserModel.query.filter_by(email=kwargs["email"]).first()
+            UserModel.query.filter_by(username=kwargs["username"]).first()
+            or UserModel.query.filter_by(email=kwargs["email"]).first()
         ):
             return {"message": "User already exists"}, 409
 
@@ -72,7 +72,10 @@ class LoginView(MethodResource):
         401: If the credentials are invalid.
     """
 
-    @doc(description="Login a user and retrieve an access token.", tags=["Authentication"])
+    @doc(
+        description="Login a user and retrieve an access token.",
+        tags=["Authentication"],
+    )
     @use_kwargs(LoginViewRequestSchema, location="json")
     @marshal_with(AccessTokenResponseSchema, code=200, description="Login successful.")
     @marshal_with(MessageSchema, code=401, description="Invalid credentials.")
